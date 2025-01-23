@@ -4,7 +4,7 @@ venv/
 
 dags/__pycache__/
 dags/*.pyc
-dags/*.pyo
+dags
 dags/*.pyd
 
 logs/
