@@ -77,7 +77,7 @@ Before starting, ensure you have the following installed on your machine:
 1. **Clone the Repository**  
    Clone this repository to your local machine:
    ```bash
-   git clone https://github.com/your_username/commerceflow.git
+   git clone https://github.com/EssumanG/E-CommerceFlow.git
    cd commerceflow
 ### Set Up Environment Variables
 
