@@ -1,0 +1,11 @@
+.env
+venv/
+
+
+dags/__pycache__/
+dags/*.pyc
+dags/*.pyo
+dags/*.pyd
+
+logs/
+*.log
