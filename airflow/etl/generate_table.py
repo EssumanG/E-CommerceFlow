@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from airflow import AirflowException
 import argparse
 from model import Connection
-
+# from psycopg2.extensions import connection, cursor
 
 @contextmanager  
 def cursor_manager(connection):
@@ -17,8 +17,8 @@ def cursor_manager(connection):
         cursor.close()
 
 
-def create_table(cursur):
-    cursur.execute("""
+def create_table(cursor):
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS ecommerce (
         cutomer_id VARCHAR(200) PRIMARY KEY, 
         customer_first_name VARCHAR(100),
@@ -43,7 +43,6 @@ def create_table(cursur):
         );
     """)
 
-    cursor.commit()
 
 def main():
     #connect to db
@@ -51,21 +50,25 @@ def main():
     #create table
 
 if "__main__" == __name__:
-       parser = argparse.ArgumentParser()
-       parser.add_argument("--database", required=True, type=str)
-       parser.add_argument("--user", required=True, type=str )
-       parser.add_argument("--password", required=True, type=str )
-       parser.add_argument("--port", required=True, type=int )
-       parser.add_argument("--host", required=True, type=str)
-       args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--database", required=True, type=str)
+    parser.add_argument("--user", required=True, type=str )
+    parser.add_argument("--password", required=True, type=str )
+    parser.add_argument("--port", required=True, type=int )
+    parser.add_argument("--host", required=True, type=str)
+    args = parser.parse_args()
       
-       connection = Connection(
-            user=args.user,
-            host=args.host,
-            password=args.password,
-            port=args.port,
-            database=args.database
-       )
-       with connection.get_cursor() as cursor:
-            create_table(cursor)
-            connection.commit()
+    try:
+        connection = Connection(
+                user=args.user,
+                host=args.host,
+                password=args.password,
+                port=args.port,
+                database=args.database
+        )
+        with connection.get_cursor() as cursor:
+                create_table(cursor)
+                connection.commit()
+    except Exception as e:
+         print(f"An error occurred: {e}")
+    
