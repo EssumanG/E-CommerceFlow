@@ -43,6 +43,8 @@ def create_table(cursur):
         );
     """)
 
+    cursor.commit()
+
 def main():
     #connect to db
     pass
@@ -66,3 +68,4 @@ if "__main__" == __name__:
        )
        with connection.get_cursor() as cursor:
             create_table(cursor)
+            connection.commit()
