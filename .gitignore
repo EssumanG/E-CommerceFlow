@@ -2,10 +2,13 @@
 venv/
 
 
-dags/__pycache__/
+**/__pycache__/**
 dags/*.pyc
 dags
 dags/*.pyd
 
 logs/
 *.log
+
+data/
+airflow/datasets/*

@@ -59,10 +59,14 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    PYTHONPATH: /opt/airflow
   volumes:
     - ${AIRFLOW_PROJ_DIR:-./airflow}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-./airflow}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-./airflow}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/etl:/opt/airflow/etl
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/datasets:/opt/airflow/datasets
+    - ./scripts:/opt/airflow/scripts
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -79,7 +83,7 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - 5435:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 30s
@@ -88,7 +92,7 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
-    command: webserver
+    command: bash -c "pip3 install python-dotenv kagglehub && airflow webserver"
     ports:
       - 8080:8080
     healthcheck:
@@ -104,7 +108,7 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
-    command: scheduler
+    command: bash -c "pip3 install python-dotenv kagglehub && airflow scheduler"
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
       interval: 10s
@@ -120,7 +124,7 @@ services:
 
   airflow-triggerer:
     <<: *airflow-common
-    command: triggerer
+    command: bash -c "pip3 install python-dotenv kagglehub && airflow triggerer"
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 10s
