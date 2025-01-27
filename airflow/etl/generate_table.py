@@ -1,6 +1,5 @@
 import psycopg2
 from contextlib import contextmanager
-from airflow import AirflowException
 import argparse
 from model import Connection
 # from psycopg2.extensions import connection, cursor
