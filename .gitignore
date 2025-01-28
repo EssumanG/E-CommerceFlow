@@ -12,3 +12,4 @@ logs/
 
 data/
 airflow/datasets/*
+.ipynb_checkpoints

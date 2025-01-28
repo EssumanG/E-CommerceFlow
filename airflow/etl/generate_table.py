@@ -20,8 +20,7 @@ def create_table(cursor):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS ecommerce (
         cutomer_id VARCHAR(200) PRIMARY KEY, 
-        customer_first_name VARCHAR(100),
-        customer_last_name VARCHAR(100),
+        customer_name VARCHAR(100),
         category_name VARCHAR(100),
         product_name VARCHAR(100),
         customer_segment VARCHAR(100),

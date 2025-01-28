@@ -259,6 +259,7 @@ services:
 
   jupyter-notebook:
     image: jupyter/pyspark-notebook:latest
+    user: root
     environment:
       JUPYTER_ENABLE_LAB: "yes"
     ports:
@@ -266,9 +267,6 @@ services:
     volumes:
       - ./airflow/etl:/home/jovyan/work
       - ./airflow/datasets/:/home/jovyan/work/data
-
-
-      
     
 volumes:
   postgres-db-volume:
