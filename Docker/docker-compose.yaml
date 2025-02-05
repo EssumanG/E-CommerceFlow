@@ -66,11 +66,14 @@ x-airflow-common:
     - ../airflow/plugins:/opt/airflow/plugins
     - ../airflow/etl:/opt/airflow/etl
     - ../airflow/datasets:/opt/airflow/datasets
+    - ./jars/postgresql-42.5.0.jar:/opt/airflow/jars/postgresql-42.5.0.jar
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
+  networks:
+      - my-network
 
 services:
   postgres:
@@ -88,6 +91,8 @@ services:
       interval: 30s
       retries: 5
     restart: always
+    networks:
+      - my-network
 
   airflow-webserver:
     <<: *airflow-common
@@ -236,12 +241,15 @@ services:
     build: ./docker-spark
     ports:
       - "7077:7077"
-      - "8081:8081"
+      - "4404:8080"
     volumes:
       - ../airflow/etl:/opt/spark_app
       - ../airflow/datasets/:/opt/spark_app/data
+      
     environment:
       - SPARK_MODE=master
+    networks:
+      - my-network
 
 
   spark-worker:
@@ -257,18 +265,24 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
+    networks:
+      - my-network
 
-  jupyter-notebook:
-    # image: jupyter/pyspark-notebook:latest
-    build: ./docker-notebook
-    user: root
-    environment:
-      JUPYTER_ENABLE_LAB: "yes"
-    ports:
-      - 8888:8888
-    volumes:
-      - ../airflow/etl:/home/jovyan/work
-      - ../airflow/datasets/:/home/jovyan/work/data
+  # jupyter-notebook:
+  #   # image: jupyter/pyspark-notebook:latest
+  #   build: ./docker-notebook
+  #   user: root
+  #   environment:
+  #     JUPYTER_ENABLE_LAB: "yes"
+  #   ports:
+  #     - 8888:8888
+  #   volumes:
+  #     - ../airflow/etl:/home/jovyan/work
+  #     - ../airflow/datasets/:/home/jovyan/work/data
     
 volumes:
   postgres-db-volume:
+
+networks:
+  my-network:
+    driver: bridge

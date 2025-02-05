@@ -78,7 +78,7 @@ Before starting, ensure you have the following installed on your machine:
    Clone this repository to your local machine:
    ```bash
    git clone https://github.com/EssumanG/E-CommerceFlow.git
-   cd commerceflow
+   cd e-commerceflow/Docker
 ### Set Up Environment Variables
 
 1. Copy the example `.env` file to create your own environment configuration file:
