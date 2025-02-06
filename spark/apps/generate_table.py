@@ -1,7 +1,7 @@
 import psycopg2
 from contextlib import contextmanager
 import argparse
-from model import Connection
+from utils.model import Connection
 # from psycopg2.extensions import connection, cursor
 
 @contextmanager  

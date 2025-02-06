@@ -1,7 +1,7 @@
 .env
 venv/
 
-
+__pycache__
 **/__pycache__/**
 dags/*.pyc
 dags
@@ -13,3 +13,4 @@ logs/
 data/
 airflow/datasets/*
 .ipynb_checkpoints
+output/

@@ -5,7 +5,7 @@ import psycopg2
 import psycopg2.extras as pg_extras
 
 spark = SparkSession.builder.appName("process_data")\
-        .config("spark.jars", "/opt/spark_app/jars/postgresql-42.5.0.jar")\
+        .config("spark.jars", "/opt/spark/resources/jars/postgresql-42.5.0.jar")\
             .getOrCreate()
 
 
@@ -32,7 +32,7 @@ schema = StructType([
     StructField("order_quantity", IntegerType(), True),
     StructField("profit_per_order", DoubleType(), True)
 ])
-df = spark.read.option("header",True).option("encoding", "UTF-8").schema(schema).csv("/opt/airflow/datasets/ecommerce/Ecommerce_data.csv")
+df = spark.read.option("header",True).option("encoding", "UTF-8").schema(schema).csv("/opt/spark/resources/data/ecommerce/Ecommerce_data.csv")
 # df = spark.read.option("header",True).schema(schema).csv("/opt/spark_app/data/ecommerce/Ecommerce_data.csv")
 
 df = df.withColumn("order_date", F.to_date("order_date", "yyyy-MM-dd"))
@@ -41,9 +41,10 @@ df = df.withColumn("customer_name", F.concat_ws(",","customer_first_name","custo
 df_new = df.drop("profit_per_order", "customer_first_name", "customer_last_name" )
 
 df_new.printSchema()
+print("The number of rows-------------------------")
+df_new.count()
 
-
-df_new.show(10,truncate=False)
+df_10 = df_new.limit(10)
 
 
 # TODO: Fix Error: get stuck at when writing to postgres db or othe file

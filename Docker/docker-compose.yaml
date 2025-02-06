@@ -46,8 +46,8 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.5.1}
-  build: ./docker-airflow
+  image: airflow-spark:2.4.2_latest
+  # build: ./docker-airflow
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -56,7 +56,7 @@ x-airflow-common:
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     PYTHONPATH: /opt/airflow
@@ -64,9 +64,9 @@ x-airflow-common:
     - ../airflow/dags:/opt/airflow/dags
     - ../airflow/logs:/opt/airflow/logs
     - ../airflow/plugins:/opt/airflow/plugins
-    - ../airflow/etl:/opt/airflow/etl
-    - ../airflow/datasets:/opt/airflow/datasets
-    - ./jars/postgresql-42.5.0.jar:/opt/airflow/jars/postgresql-42.5.0.jar
+    - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
+    - ../spark/resources/:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster) 
+    - ../utils:/opt/airflow/utils
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -84,6 +84,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+      - ./docker-airflow/pg-init-scripts:/docker-entrypoint-initdb.d
     ports:
       - 5435:5432
     healthcheck:
@@ -216,7 +217,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+      - ${AIRFLOW_PROJ_DIR:-../airflow}:/sources
 
   airflow-cli:
     <<: *airflow-common
@@ -237,14 +238,16 @@ services:
 
 
   spark-master:
-    # image: "bitnami/spark:latest"
-    build: ./docker-spark
+    image: "bitnami/spark:latest"
+    # build: ./docker-spark
     ports:
       - "7077:7077"
-      - "4404:8080"
+      - "8181:8080"
     volumes:
-      - ../airflow/etl:/opt/spark_app
-      - ../airflow/datasets/:/opt/spark_app/data
+      - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
+      - ../spark/resources/:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
+      - ../utils:/opt/spark/utils
+    
       
     environment:
       - SPARK_MODE=master
@@ -252,33 +255,75 @@ services:
       - my-network
 
 
-  spark-worker:
-    build: ./docker-spark
-    # image: "bitnami/spark:latest"
+  spark-worker-1:
+    image: "bitnami/spark:latest"
+    user: root
     ports:
-      - "8082:8081"
+      - "8083:8081"
     depends_on:
       - spark-master
     volumes:
-      - ../airflow/etl:/opt/spark_app
-      - ../airflow/datasets/:/opt/spark_app/data
+      - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
+      - ../spark/resources/:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
+      - ../utils:/opt/spark/utils
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+    networks:
+      - my-network
+  spark-worker-2:
+    image: "bitnami/spark:latest"
+    user: root
+    ports:
+      - "8084:8081"
+    depends_on:
+      - spark-master
+    volumes:
+      - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
+      - ../spark/resources/:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
+      - ../utils:/opt/spark/utils
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+    networks:
+      - my-network
+  spark-worker-3:
+    image: "bitnami/spark:latest"
+    user: root
+    ports:
+      - "8085:8081"
+    depends_on:
+      - spark-master
+    volumes:
+      - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
+      - ../spark/resources/:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
+      - ../utils:/opt/spark/utils
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
     networks:
       - my-network
 
-  # jupyter-notebook:
-  #   # image: jupyter/pyspark-notebook:latest
-  #   build: ./docker-notebook
-  #   user: root
-  #   environment:
-  #     JUPYTER_ENABLE_LAB: "yes"
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ../airflow/etl:/home/jovyan/work
-  #     - ../airflow/datasets/:/home/jovyan/work/data
+  jupyter-notebook:
+    image: jupyter/pyspark-notebook:latest
+    # build: ./docker-notebook
+    networks:
+      - my-network
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    ports:
+      - 8888:8888
+    volumes:
+      - ../notebooks:/home/jovyan/work/notebooks/
+      - ../spark/resources/data:/home/jovyan/work/data/
+      - ../spark/resources/jars:/home/jovyan/work/jars/
+      - ../utils:/home/jovyan/work/notebook/utils
     
 volumes:
   postgres-db-volume:
