@@ -1,11 +1,9 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, StringType, IntegerType, DateType, DoubleType
 from pyspark.sql import functions as F
-import psycopg2
-import psycopg2.extras as pg_extras
+import uuid
 
 spark = SparkSession.builder.appName("process_data")\
-        .config("spark.jars", "/opt/spark/resources/jars/postgresql-42.5.0.jar")\
             .getOrCreate()
 
 
@@ -32,19 +30,68 @@ schema = StructType([
     StructField("order_quantity", IntegerType(), True),
     StructField("profit_per_order", DoubleType(), True)
 ])
-df = spark.read.option("header",True).option("encoding", "UTF-8").schema(schema).csv("/opt/spark/resources/data/ecommerce/Ecommerce_data.csv")
+df = spark.read.option("header",True).option("encoding", "UTF-8").schema(schema).csv("/opt/spark/resources/data/ecommerce/Ecommerce_data_100.csv")
 # df = spark.read.option("header",True).schema(schema).csv("/opt/spark_app/data/ecommerce/Ecommerce_data.csv")
 
 df = df.withColumn("order_date", F.to_date("order_date", "yyyy-MM-dd"))
 df = df.withColumn("ship_date", F.to_date("ship_date", "yyyy-MM-dd"))
-df = df.withColumn("customer_name", F.concat_ws(",","customer_first_name","customer_last_name"))
-df_new = df.drop("profit_per_order", "customer_first_name", "customer_last_name" )
 
-df_new.printSchema()
+# Define a UDF to generate UUID
+uuid_udf = F.udf(lambda: str(uuid.uuid4()), StringType())
+
+#Extracting unique customers info
+customer_df = df.select(
+    "customer_id",
+    "customer_first_name",
+    "customer_last_name",
+    "customer_segment",
+    "customer_city",
+    "customer_state",
+    "customer_country",
+    "customer_region"
+).dropDuplicates(["customer_id"])
+customer_df.printSchema()
+
+
+#Extracting unique category info and assigning uuid to the df
+catergory_df = df.select(
+    "category_name"
+).distinct().withColumn("category_id", uuid_udf())
+catergory_df.printSchema()
+
+
+# Join category_id with product data
+product_df = df.select("product_name", "category_name").dropDuplicates(["product_name"])
+product_df = product_df.join(
+    catergory_df, "category_name", "left"
+).select("product_name", "category_id")
+
+# assigning uuid to the df
+product_df = product_df.withColumn("product_id", uuid_udf())
+product_df.printSchema()
+
+
+#Extracting unique orders data
+order_df = df.select(
+    "order_id",
+    "customer_id",
+    "order_date",
+    "delivery_status",
+    "shipping_type",
+    "ship_date",
+    "days_for_shipment_scheduled",
+    "days_for_shipment_real",
+    "sales_per_order",
+    "profit_per_order"
+).dropDuplicates(["order_id"])
+order_df.printSchema()
+
+
+
 print("The number of rows-------------------------")
-df_new.count()
+catergory_df.show(2)
 
-df_10 = df_new.limit(10)
+# df_10 = df_new.limit(10)
 
 
 # TODO: Fix Error: get stuck at when writing to postgres db or othe file
