@@ -230,13 +230,14 @@ services:
   spark-master:
     image: "bitnami/spark:latest"
     # build: ./docker-spark
+    user: root
     ports:
       - "7077:7077"
       - "8181:8080"
     volumes:
       - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
       - ../spark/resources:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
-      - ../utils:/opt/spark/utils
+      - ../utils:/opt/spark/apps/utils
     
       
     environment:
@@ -255,7 +256,7 @@ services:
     volumes:
       - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
       - ../spark/resources:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
-      - ../utils:/opt/spark/utils
+      - ../utils:/opt/spark/apps/utils
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
@@ -263,38 +264,38 @@ services:
       - SPARK_WORKER_CORES=1
     networks:
       - my-network
-  # spark-worker-2:
-  #   image: "bitnami/spark:latest"
-  #   user: root
-  #   ports:
-  #     - "8084:8081"
-  #   depends_on:
-  #     - spark-master
-  #   volumes:
-  #     - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
-  #     - ../spark/resources:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
-  #     - ../utils:/opt/spark/utils
-  #   environment:
-  #     - SPARK_MODE=worker
-  #     - SPARK_MASTER_URL=spark://spark-master:7077
-  #     - SPARK_WORKER_MEMORY=2G
-  #     - SPARK_WORKER_CORES=1
-  #   networks:
-  #     - my-network
+  spark-worker-2:
+    image: "bitnami/spark:latest"
+    user: root
+    ports:
+      - "8084:8081"
+    depends_on:
+      - spark-master
+    volumes:
+      - ../spark/apps:/opt/spark/apps #Spark scripts folder (Must be the same path in airflow and Spark Cluster)
+      - ../spark/resources:/opt/spark/resources #Resources folder (Must be the same path in airflow and Spark Cluster)
+      - ../utils:/opt/spark/apps/utils
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=1
+    networks:
+      - my-network
 
-  # jupyter-notebook:
-  #   image: jupyter-spark-all:latest
-  #   networks:
-  #     - my-network
-  #   environment:
-  #     - JUPYTER_TOKEN=my_secure_token
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ../notebooks:/home/jovyan/work/notebooks/
-  #     - ../spark/resources/data:/home/jovyan/work/data/
-  #     - ../spark/resources/jars:/home/jovyan/work/jars/
-  #     - ../utils:/home/jovyan/work/notebooks/utils
+  jupyter-notebook:
+    image: jupyter-spark-all:latest
+    networks:
+      - my-network
+    environment:
+      - JUPYTER_TOKEN=my_secure_token
+    ports:
+      - 8888:8888
+    volumes:
+      - ../notebooks:/home/jovyan/work/notebooks/
+      - ../spark/resources/data:/home/jovyan/work/data/
+      - ../spark/resources/jars:/home/jovyan/work/jars/
+      - ../utils:/home/jovyan/work/notebooks/utils
     
 volumes:
   postgres-db-volume:

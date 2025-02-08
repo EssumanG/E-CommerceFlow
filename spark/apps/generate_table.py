@@ -21,7 +21,8 @@ def create_table(cursor):
     CREATE TABLE IF NOT EXISTS ecommerce (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         customer_id VARCHAR(200), 
-        customer_name VARCHAR(200),
+        customer_first_name VARCHAR(200),
+        customer_last_name VARCHAR(200),
         category_name VARCHAR(200),
         product_name TEXT,
         customer_segment VARCHAR(200),
@@ -36,9 +37,10 @@ def create_table(cursor):
         shipping_type VARCHAR(100),
         days_for_shipment_scheduled INT,
         days_for_shipment_real INT,   
-        order_item_discount INT,
+        order_item_discount DOUBLE PRECISION,
         sales_per_order INT,
-        order_quantity INT       
+        order_quantity INT,   
+        profit_per_order DOUBLE PRECISION       
         );
     """)
 
@@ -112,40 +114,55 @@ def main():
     #create table
 
 if "__main__" == __name__:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--database", required=True, type=str)
-    parser.add_argument("--user", required=True, type=str )
-    parser.add_argument("--password", required=True, type=str )
-    parser.add_argument("--port", required=True, type=int )
-    parser.add_argument("--host", required=True, type=str)
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--database", required=True, type=str)
+    # parser.add_argument("--user", required=True, type=str )
+    # parser.add_argument("--password", required=True, type=str )
+    # parser.add_argument("--port", required=True, type=int )
+    # parser.add_argument("--host", required=True, type=str)
+    # args = parser.parse_args()
       
     try:
+        # connection = Connection(
+        #         user=args.user,
+        #         host=args.host,
+        #         password=args.password,
+        #         port=args.port,
+        #         database=args.database
+        # )
+
+
         connection = Connection(
-                user=args.user,
-                host=args.host,
-                password=args.password,
-                port=args.port,
-                database=args.database
+                user="test_user",
+                host="postgres",
+                password="test1234",
+                port="5432",
+                database="ecommerce"
         )
+
         with connection.get_cursor() as cursor:
-                # create_table(cursor)
-                print("----------------Creating Customer Table---------------------------------------")
-                create_customer_table(cursor)
                 
-                print("----------------Creating Orders Table---------------------------------------")
-                create_orders_table(cursor)
+                create_table(cursor)
+                ##################################################################################################################
+                # Trying to normalize the table
+                ##########################################################################################################################
+                # print("----------------Creating Customer Table---------------------------------------")
+                # create_customer_table(cursor)
+                
+                # print("----------------Creating Orders Table---------------------------------------")
+                # create_orders_table(cursor)
 
-                print("----------------Creating Categories Table---------------------------------------")
-                create_category_table(cursor)
+                # print("----------------Creating Categories Table---------------------------------------")
+                # create_category_table(cursor)
 
-                print("----------------Creating Products Table---------------------------------------")
-                create_product_table(cursor)
+                # print("----------------Creating Products Table---------------------------------------")
+                # create_product_table(cursor)
 
-                print("----------------Creating Order_Items Table---------------------------------------")
-                create_orders_items_table(cursor)
+                # print("----------------Creating Order_Items Table---------------------------------------")
+                # create_orders_items_table(cursor)
+                #################################################################################################################################
                 connection.commit()
-        print("----------------Done Creating Tables---------------------------------------")
+        print("----------------Done Creating Table---------------------------------------")
     except Exception as e:
          print(f"An error occurred: {e}")
     
