@@ -118,49 +118,95 @@ seasonal_sales.show(10)
 
 
 db_url = "jdbc:postgresql://postgres:5432/ecommerce"
+db_url_2 = "jdbc:postgresql://dpg-culq5iin91rc73egvqn0-a.oregon-postgres.render.com:5432/ecommerce_hziq"
 db_properties = {"user": "test_user", "password": "test1234", "driver": "org.postgresql.Driver"}
 try:
+    # products_analysis.write.format("jdbc") \
+    #     .option("url", db_url) \
+    #     .option("dbtable", "public.product_analysis") \
+    #     .option("user", "test_user") \
+    #     .option("password", "test1234") \
+    #     .option("driver", "org.postgresql.Driver") \
+    #     .mode("overwrite") \
+    #     .save()
+    
     products_analysis.write.format("jdbc") \
-        .option("url", db_url) \
+        .option("url", db_url_2) \
         .option("dbtable", "public.product_analysis") \
         .option("user", "test_user") \
-        .option("password", "test1234") \
+        .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
         .save()
+    
+    # top_customers.write.format("jdbc") \
+    #     .option("url", db_url) \
+    #     .option("dbtable", "public.top_customers") \
+    #     .option("user", "test_user") \
+    #     .option("password", "test1234") \
+    #     .option("driver", "org.postgresql.Driver") \
+    #     .mode("overwrite") \
+    #     .save()
     
     top_customers.write.format("jdbc") \
-        .option("url", db_url) \
+        .option("url", db_url_2) \
         .option("dbtable", "public.top_customers") \
         .option("user", "test_user") \
-        .option("password", "test1234") \
+        .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
         .save()
+    
+    # geo_demand.write.format("jdbc") \
+    #     .option("url", db_url) \
+    #     .option("dbtable", "public.geo_demand") \
+    #     .option("user", "test_user") \
+    #     .option("password", "test1234") \
+    #     .option("driver", "org.postgresql.Driver") \
+    #     .mode("overwrite") \
+    #     .save()
     
     geo_demand.write.format("jdbc") \
-        .option("url", db_url) \
+        .option("url", db_url_2) \
         .option("dbtable", "public.geo_demand") \
         .option("user", "test_user") \
-        .option("password", "test1234") \
+        .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
         .save()
+    
+    # seasonal_sales.write.format("jdbc") \
+    #     .option("url", db_url) \
+    #     .option("dbtable", "public.seasonal_sales") \
+    #     .option("user", "test_user") \
+    #     .option("password", "test1234") \
+    #     .option("driver", "org.postgresql.Driver") \
+    #     .mode("overwrite") \
+    #     .save()
     
     seasonal_sales.write.format("jdbc") \
-        .option("url", db_url) \
+        .option("url", db_url_2) \
         .option("dbtable", "public.seasonal_sales") \
         .option("user", "test_user") \
-        .option("password", "test1234") \
+        .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
         .save()
     
+    # customer_segments.write.format("jdbc") \
+    #     .option("url", db_url) \
+    #     .option("dbtable", "public.customer_segment_analysis") \
+    #     .option("user", "test_user") \
+    #     .option("password", "test1234") \
+    #     .option("driver", "org.postgresql.Driver") \
+    #     .mode("overwrite") \
+    #     .save()
+    
     customer_segments.write.format("jdbc") \
-        .option("url", db_url) \
+        .option("url", db_url_2) \
         .option("dbtable", "public.customer_segment_analysis") \
         .option("user", "test_user") \
-        .option("password", "test1234") \
+        .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
         .save()

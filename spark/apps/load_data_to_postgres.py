@@ -93,7 +93,7 @@ try:
     
     df.write.format("jdbc") \
         .option("url", db_url_2) \
-        .option("dbtable", "public.ecommerce_hziq") \
+        .option("dbtable", "public.ecommerce") \
         .option("user", "test_user") \
         .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
         .option("driver", "org.postgresql.Driver") \

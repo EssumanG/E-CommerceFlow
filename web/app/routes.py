@@ -6,10 +6,10 @@ from app import db
 
 @main.route("/")
 def hello():
-    return "Hello, Flask with Gunicorn!"
+    return render_template("home.html")
 
 
-@main.route("/home")
+@main.route("/overview")
 def hello_world():
     executives = [
         {"name": "Essuman Godsaves", "company":"The Company", "title":"CEO"},
@@ -39,3 +39,8 @@ def get_product():
 def get_records():
     records = Ecommerce.query.limit(10).all()
     return render_template("orders.html", orders = records)
+
+
+@main.route("/in-progress")
+def progress():
+    return render_template("dev.html")
