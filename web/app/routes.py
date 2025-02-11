@@ -4,8 +4,12 @@ from sqlalchemy import func, distinct
 main = Blueprint("main", __name__)
 from app import db
 
-
 @main.route("/")
+def hello():
+    return "Hello, Flask with Gunicorn!"
+
+
+@main.route("/home")
 def hello_world():
     executives = [
         {"name": "Essuman Godsaves", "company":"The Company", "title":"CEO"},
