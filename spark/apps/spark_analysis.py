@@ -57,7 +57,7 @@ df = df.drop("ship_date").withColumnRenamed("ship_date_p1", "ship_date")
 
 
 
-products_analysis = df.select("product_name", "category_name", "order_id", "sales_per_order", "profit_per_order", "order_quantity")\
+products_analysis = df.select("product_name", "category_name", "order_id", "sales_per_order", "profit_per_order", "order_quantity", "customer_segment")\
     .groupBy("product_name")\
     .agg(
         F.count("order_id").alias("total_orders"),
@@ -69,7 +69,7 @@ products_analysis = df.select("product_name", "category_name", "order_id", "sale
 products_analysis.show(10)
 
 
-top_customers = df.groupBy("customer_id", "customer_first_name", "customer_first_name")\
+top_customers = df.groupBy("customer_id", "customer_first_name", "customer_last_name")\
     .agg(
         F.sum("sales_per_order").alias("total_revenue"),
         F.count("order_id").alias("total_orders")
@@ -105,7 +105,7 @@ seasonal_sales = df_dates.groupBy("year", "month")\
         F.avg("sales_per_order").alias("avg_sales"),
         F.avg("profit_per_order").alias("avg_profit"),
         F.sum("profit_per_order").alias("total_profit"),
-        F.count("order_id").alias("total_revenue")
+        F.count("order_id").alias("total_orders")
     ).orderBy("year", "month")
 seasonal_sales.show(10)
 
@@ -119,16 +119,52 @@ seasonal_sales.show(10)
 
 db_url = "jdbc:postgresql://postgres:5432/ecommerce"
 db_properties = {"user": "test_user", "password": "test1234", "driver": "org.postgresql.Driver"}
-# try:
-#     df.write.format("jdbc") \
-#         .option("url", db_url) \
-#         .option("dbtable", "public.ecommerce") \
-#         .option("user", "test_user") \
-#         .option("password", "test1234") \
-#         .option("driver", "org.postgresql.Driver") \
-#         .mode("append") \
-#         .save()
-# except Exception as e:
-#     print(f"ERORR---------{e}")
+try:
+    products_analysis.write.format("jdbc") \
+        .option("url", db_url) \
+        .option("dbtable", "public.product_analysis") \
+        .option("user", "test_user") \
+        .option("password", "test1234") \
+        .option("driver", "org.postgresql.Driver") \
+        .mode("overwrite") \
+        .save()
+    
+    top_customers.write.format("jdbc") \
+        .option("url", db_url) \
+        .option("dbtable", "public.top_customers") \
+        .option("user", "test_user") \
+        .option("password", "test1234") \
+        .option("driver", "org.postgresql.Driver") \
+        .mode("overwrite") \
+        .save()
+    
+    geo_demand.write.format("jdbc") \
+        .option("url", db_url) \
+        .option("dbtable", "public.geo_demand") \
+        .option("user", "test_user") \
+        .option("password", "test1234") \
+        .option("driver", "org.postgresql.Driver") \
+        .mode("overwrite") \
+        .save()
+    
+    seasonal_sales.write.format("jdbc") \
+        .option("url", db_url) \
+        .option("dbtable", "public.seasonal_sales") \
+        .option("user", "test_user") \
+        .option("password", "test1234") \
+        .option("driver", "org.postgresql.Driver") \
+        .mode("overwrite") \
+        .save()
+    
+    customer_segments.write.format("jdbc") \
+        .option("url", db_url) \
+        .option("dbtable", "public.customer_segment_analysis") \
+        .option("user", "test_user") \
+        .option("password", "test1234") \
+        .option("driver", "org.postgresql.Driver") \
+        .mode("overwrite") \
+        .save()
+except Exception as e:
+    print(f"ERORR---------{e}")
 
 print("hello")

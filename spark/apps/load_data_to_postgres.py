@@ -67,7 +67,12 @@ df_t = df.select(
 count = df.count()
 
 print(f"The number of rows-------------------------{count}")
-df.printSchema()
+
+
+
+
+
+
 # df_t.show(10)
 # df_10 = df_new.limit(10)
 

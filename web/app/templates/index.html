@@ -2,25 +2,126 @@
 
 {% block body %}
 <div>
-    <p class="lead">Executives</p>
-    <table class="table table-condensed table-striped">
-        <thead>
-            <th>Name</th>
-            <th>Company</th>
-            <th>Title</th>
-        </thead>
-        <tbody>
-            {% for executive in executives -%}
-            <tr>
-                <td>{{executive.name}}</td>
-                <td>{{executive.company}}</td>
-                <td>{{executive.title}}</td>
-            </tr>
-            {%endfor -%}
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="lead-1">Description</h2>
+            A data engineering project for building an ETL pipeline, REST APIs, a web service using Apache Airflow, Apache Spark, PostgreSQL, React, and Flask.
+            <p><a href="">source code</a>  from <a href="">GitHub</a></p>
+            <p> Data Source: <a href="">source</a></p>
+        </div>
+        <div class="col">
+            <h2 class="lead"> Column Insights</h2>
+            <div class="table-responsive " style="max-height: 250px; overflow-y: auto;">
+                <table class="table table table-condensed table-striped table-bordered">
+                  <thead class="sticky-top bg-primary">
+                    <tr>
+                      <th scope="col">Column Names</th>
+                      <th scope="col">Unique rows (#)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for column in columns %}
+                    <tr>
+                      <th scope="row">{{ column.column_name }}</th>
+                      <td>{{ column.unique_counts }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              
+        </div>
+    </div>
+
+    <hr>
+    <div class="px-3">
+        <h2>Available Insights</h2>
+        <div class="row">
+            <a href="get_records_10" class="text-decoration-none text-dark">
+            <div class="col-sm-4">
+                <div class="card mb-3">
+                    <div class="card-header py-0 text-bg-info">
+                        <h5 class="card-title">Ecommerce General</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Infomation on card text</p>
+                    </div>
+        
+                </div>
+            </div>
+            </a>
+
+            <div class="col-sm-4">
+                <div class="card mb-3">
+                    <div class="card-header py-0 text-bg-info">
+                        <h5 class="card-title">Product Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Infomation on card text</p>
+                    </div>
+        
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card mb-3 hover-zoom hover-shadow">
+                    <div class="card-header py-0 text-bg-info">
+                        <h5 class="card-title">Top Customers</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Infomation on card text</p>
+                    </div>
+        
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card mb-3">
+                    <div class="card-header py-0 text-bg-info">
+                        <h5 class="card-title">Geographical Demand</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Infomation on card text</p>
+                    </div>
+        
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card mb-3">
+                    <div class="card-header py-0 text-bg-info">
+                        <h5 class="card-title">Seasonal Sales</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Infomation on card text</p>
+                    </div>
+        
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card mb-3">
+                    <div class="card-header py-0 text-bg-info"">
+                        <h5 class="card-title">Segments Analaysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Infomation on card text</p>
+                    </div>
+        
+                </div>
+            </div>
+    </div>
+
+    
+</div>
+</div>
+        
+    </div>
 </div>
 {% endblock %}
+
+
+
 
 
 
