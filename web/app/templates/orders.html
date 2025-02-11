@@ -3,28 +3,32 @@
 {% block body %}
 <div>
     <p class="lead fw-bold">Orders Made -  <span class="fst-italic">Still Under Development!!!...</span></p>
-    <table class="table table-condensed table-striped">
-        <thead>
-            <th>Order Id</th>
-            <th>Product Name</th>
-            <th>Ordered By</th>
-            <th>Product Category</th>
-            <th>Order Quantity </th>
-            <th>Order Date</th>
-        </thead>
-        <tbody>
-            {% for order in orders -%}
-            <tr>
-                <td>{{order.order_id}}</td>
-                <td>{{order.product_name}}</td>
-                <td>{{order.customer_last_name}}, {{order.customer_first_name}} </td>
-                <td>{{order.category_name}}</td>
-                <td>{{order.order_quantity}}</td>
-                <td>{{order.order_date}}</td>
-            </tr>
-            {%endfor -%}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped">
+            <thead class="table-primary">
+                <tr>
+                    <th>Order Id</th>
+                    <th>Product Name</th>
+                    <th>Ordered By</th>
+                    <th>Product Category</th>
+                    <th>Order Quantity</th>
+                    <th>Order Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders -%}
+                <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.product_name }}</td>
+                    <td>{{ order.customer_last_name }}, {{ order.customer_first_name }}</td>
+                    <td>{{ order.category_name }}</td>
+                    <td>{{ order.order_quantity }}</td>
+                    <td>{{ order.order_date }}</td>
+                </tr>
+                {% endfor -%}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
 
