@@ -134,10 +134,10 @@ if "__main__" == __name__:
 
         connection = Connection(
                 user="test_user",
-                host="postgres",
-                password="test1234",
+                host="dpg-culq5iin91rc73egvqn0-a.oregon-postgres.render.com",
+                password="VbsthRufva4wgBpEXxuiaQxvRHSM6wEG",
                 port="5432",
-                database="ecommerce"
+                database="ecommerce_hziq"
         )
 
         with connection.get_cursor() as cursor:
