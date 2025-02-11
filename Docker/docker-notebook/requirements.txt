@@ -1,2 +1,5 @@
 psycopg2-binary
 kagglehub
+flask
+flask_migrate
+flask_sqlalchemy

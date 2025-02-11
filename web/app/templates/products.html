@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div>
+    <p class="lead">Available Products</p>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <th>Product Name</th>
+            <th>Product Category</th>
+        </thead>
+        <tbody>
+            {% for product in products -%}
+            <tr>
+                <td>{{product.product_name}}</td>
+                <td>{{product.category_id}}</td>
+            </tr>
+            {%endfor -%}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+
+

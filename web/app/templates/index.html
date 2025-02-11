@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div>
+    <p class="lead">Executives</p>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Title</th>
+        </thead>
+        <tbody>
+            {% for executive in executives -%}
+            <tr>
+                <td>{{executive.name}}</td>
+                <td>{{executive.company}}</td>
+                <td>{{executive.title}}</td>
+            </tr>
+            {%endfor -%}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+
+

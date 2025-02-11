@@ -8,7 +8,8 @@ spark = SparkSession.builder.appName("process_data")\
             .config("spark.driver.extraClassPath", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
             .config("spark.executor.extraClassPath", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
                 .getOrCreate()
-
+db_url = "jdbc:postgresql://postgres:5432/ecommerce"
+db_properties = {"user": "test_user", "password": "test1234", "driver": "org.postgresql.Driver"}
 
 schema = StructType([
     StructField("customer_id", StringType(), True),
@@ -36,7 +37,7 @@ schema = StructType([
 df = spark.read.option("header",True)\
     .option("encoding", "UTF-8")\
         .schema(schema)\
-            .csv("/opt/spark/resources/data/ecommerce/Ecommerce_data.csv")
+            .csv("/opt/spark/resources/data/ecommerce/Ecommerce_data_100.csv")
 # df = spark.read.option("header",True).schema(schema).csv("/opt/spark_app/data/ecommerce/Ecommerce_data.csv")
 
 df = df.withColumn("order_date_p1",
@@ -55,36 +56,96 @@ df = df.withColumn("ship_date_p1",
     ))
 df = df.drop("ship_date").withColumnRenamed("ship_date_p1", "ship_date")
 
-df_t = df.select(
-    "order_id",
-    "product_name",
-    "category_name",
-    "order_date",
-    "ship_date",
-    "shipping_type"
-)
+# Define a UDF to generate UUID
+uuid_udf = F.udf(lambda: str(uuid.uuid4()), StringType())
 
-count = df.count()
-
-print(f"The number of rows-------------------------{count}")
-df.printSchema()
-# df_t.show(10)
-# df_10 = df_new.limit(10)
-
+#Extracting unique customers info
+customer_df = df.select(
+    "customer_id",
+    "customer_first_name",
+    "customer_last_name",
+    "customer_segment",
+    "customer_city",
+    "customer_state",
+    "customer_country",
+    "customer_region"
+).dropDuplicates(["customer_first_name", "customer_last_name"])
 
 
-db_url = "jdbc:postgresql://postgres:5432/ecommerce"
-db_properties = {"user": "test_user", "password": "test1234", "driver": "org.postgresql.Driver"}
+customer_df.show(20)
+
+#Extracting unique category info and assigning uuid to the df
+# catergory_df = df.select(
+#     "category_name"
+# ).distinct()
 # try:
-#     df.write.format("jdbc") \
+#     catergory_df.write.format("jdbc") \
 #         .option("url", db_url) \
-#         .option("dbtable", "public.ecommerce") \
+#         .option("dbtable", "public.categories") \
 #         .option("user", "test_user") \
 #         .option("password", "test1234") \
 #         .option("driver", "org.postgresql.Driver") \
 #         .mode("append") \
 #         .save()
+    
+#     catergory_df.write.format("jdbc") \
+#         .option("url", db_url) \
+#         .option("dbtable", "public.categories") \
+#         .option("user", "test_user") \
+#         .option("password", "test1234") \
+#         .option("driver", "org.postgresql.Driver") \
+#         .mode("append") \
+#         .save()
+
+
+#     catergory_db_df = spark.read.format("jdbc") \
+#         .option("url", db_url) \
+#         .option("dbtable", "public.categories") \
+#         .option("user", "test_user") \
+#         .option("password", "test1234") \
+#         .option("driver", "org.postgresql.Driver") \
+#         .load()
+
+#     # Join category_id with product data
+#     product_df = df.select("product_name", "category_name").dropDuplicates(["product_name"])
+#     product_df = product_df.join(
+#         catergory_db_df, "category_name", "left"
+#     ).select("product_name", "category_id")
+
+# # #Extracting unique orders data
+# # order_df = df.select(
+# #     "order_id",
+# #     "customer_id",
+# #     "order_date",
+# #     "delivery_status",
+# #     "shipping_type",
+# #     "ship_date",
+# #     "days_for_shipment_scheduled",
+# #     "days_for_shipment_real",
+# #     "sales_per_order",
+# #     "profit_per_order"
+# # ).dropDuplicates(["order_id"])
+# # order_df.printSchema()
+
+#     count = df.count()
+#     print(f"The number of rows-------------------------{count}")
+
+# # df_10 = df_new.limit(10)
+
+
+# # TODO: Fix Error: get stuck at when writing to postgres db or othe file
+# # df_new.coalesce(4).write.option("header", True).mode("overwrite").csv("./output/ecommerce_transformed.csv")
+
+
+    # product_df.write.format("jdbc") \
+    #     .option("url", db_url) \
+    #     .option("dbtable", "public.products") \
+    #     .option("user", "test_user") \
+    #     .option("password", "test1234") \
+    #     .option("driver", "org.postgresql.Driver") \
+    #     .mode("append") \
+    #     .save()
 # except Exception as e:
-#     print(f"ERORR---------{e}")
+    # print(f"ERORR---------{e}")
 
 print("hello")

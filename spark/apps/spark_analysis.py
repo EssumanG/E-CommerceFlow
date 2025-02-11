@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructField, StructType, StringType, IntegerType, DateType, DoubleType
+from pyspark.sql.types import StructField, StructType, StringType, IntegerType, DoubleType
 from pyspark.sql import functions as F
-import uuid
 
 spark = SparkSession.builder.appName("process_data")\
             .config("spark.jars", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
@@ -35,9 +34,9 @@ schema = StructType([
 ])
 df = spark.read.option("header",True)\
     .option("encoding", "UTF-8")\
-        .schema(schema)\
-            .csv("/opt/spark/resources/data/ecommerce/Ecommerce_data.csv")
-# df = spark.read.option("header",True).schema(schema).csv("/opt/spark_app/data/ecommerce/Ecommerce_data.csv")
+    .schema(schema)\
+    .csv("/opt/spark/resources/data/ecommerce/Ecommerce_data.csv")
+
 
 df = df.withColumn("order_date_p1",
     F.coalesce(
@@ -47,7 +46,6 @@ df = df.withColumn("order_date_p1",
 df = df.drop("order_date").withColumnRenamed("order_date_p1", "order_date")
 
 
-
 df = df.withColumn("ship_date_p1",
     F.coalesce(
         F.to_date(F.col("ship_date"), "d/M/yyyy"),  # Handles "11/5/2022"
@@ -55,19 +53,65 @@ df = df.withColumn("ship_date_p1",
     ))
 df = df.drop("ship_date").withColumnRenamed("ship_date_p1", "ship_date")
 
-df_t = df.select(
-    "order_id",
-    "product_name",
-    "category_name",
-    "order_date",
-    "ship_date",
-    "shipping_type"
-)
 
-count = df.count()
 
-print(f"The number of rows-------------------------{count}")
-df.printSchema()
+
+
+products_analysis = df.select("product_name", "category_name", "order_id", "sales_per_order", "profit_per_order", "order_quantity")\
+    .groupBy("product_name")\
+    .agg(
+        F.count("order_id").alias("total_orders"),
+        F.try_divide(F.sum(F.col("sales_per_order")), F.sum(F.col("order_quantity"))).alias("unit_cost"),
+        F.sum("sales_per_order").alias("total_sales"),
+        F.avg("profit_per_order").alias("avg_profit"),
+        F.sum("order_quantity").alias("total_quantity_sold")
+    ).orderBy(F.desc("total_sales"))
+products_analysis.show(10)
+
+
+top_customers = df.groupBy("customer_id", "customer_first_name", "customer_first_name")\
+    .agg(
+        F.sum("sales_per_order").alias("total_revenue"),
+        F.count("order_id").alias("total_orders")
+    )
+top_customers.show(10)
+
+customer_segments = df.groupBy("customer_segment") \
+    .agg(
+        F.count("customer_id").alias("total_customers"),
+        F.sum("sales_per_order").alias("total_revenue"),
+        F.avg("profit_per_order").alias("avg_profit")
+    ) \
+    .orderBy(F.desc("total_revenue"))
+
+top_customers.show(10)
+
+
+geo_demand = df.groupBy("customer_city", "customer_state", "customer_region") \
+    .agg(
+        F.count("order_id").alias("total_orders"),
+        F.sum("sales_per_order").alias("total_revenue")
+    ) \
+    .orderBy(F.desc("total_orders"))
+
+geo_demand.show(10)
+# print(f"The number of rows-------------------------{count}")
+df_dates = df.withColumn("year", F.year("order_date"))\
+    .withColumn("month", F.month("order_date"))
+
+seasonal_sales = df_dates.groupBy("year", "month")\
+    .agg(
+        F.sum("sales_per_order").alias("total_revenue"),
+        F.avg("sales_per_order").alias("avg_sales"),
+        F.avg("profit_per_order").alias("avg_profit"),
+        F.sum("profit_per_order").alias("total_profit"),
+        F.count("order_id").alias("total_revenue")
+    ).orderBy("year", "month")
+seasonal_sales.show(10)
+
+
+
+
 # df_t.show(10)
 # df_10 = df_new.limit(10)
 
