@@ -9,4 +9,4 @@ RUN cd root/flaskapp; la; cat requirements.txt; pip install -r requirements.txt
 
 RUN apt-get -y update && apt-get -y install vim
 
-CMD ["gunicorn", "app:app"]
+CMD ["gunicorn", "main:app"]

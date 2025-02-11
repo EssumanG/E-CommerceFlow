@@ -69,7 +69,7 @@ customer_df = df.select(
     "customer_state",
     "customer_country",
     "customer_region"
-).dropDuplicates(["customer_first_name", ""])
+).dropDuplicates(["customer_first_name",  "customer_id", "customer_last_name"])
 
 
 customer_df.show(20)
