@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, StringType, IntegerType, DateType, DoubleType
 from pyspark.sql import functions as F
 import uuid
+from spark.apps.spark_config import JDBC_DB_URL, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, PORT_DOCKER
 
 spark = SparkSession.builder.appName("process_data")\
             .config("spark.jars", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
@@ -75,27 +76,13 @@ print(f"The number of rows-------------------------{count}")
 
 # df_t.show(10)
 # df_10 = df_new.limit(10)
-
-
-
-db_url_2 = "jdbc:postgresql://dpg-culq5iin91rc73egvqn0-a.oregon-postgres.render.com:5432/ecommerce_hziq"
-db_url = "jdbc:postgresql://postgres:5432/ecommerce"
-db_properties = {"user": "test_user", "password": "test1234", "driver": "org.postgresql.Driver"}
 try:
-    # df.write.format("jdbc") \
-    #     .option("url", db_url) \
-    #     .option("dbtable", "public.ecommerce") \
-    #     .option("user", "test_user") \
-    #     .option("password", "test1234") \
-    #     .option("driver", "org.postgresql.Driver") \
-    #     .mode("append") \
-    #     .save()
     
     df.write.format("jdbc") \
-        .option("url", db_url_2) \
+        .option("url", JDBC_DB_URL) \
         .option("dbtable", "public.ecommerce") \
-        .option("user", "test_user") \
-        .option("password", "VbsthRufva4wgBpEXxuiaQxvRHSM6wEG") \
+        .option("user", POSTGRES_USER) \
+        .option("password", POSTGRES_PASSWORD) \
         .option("driver", "org.postgresql.Driver") \
         .mode("append") \
         .save()

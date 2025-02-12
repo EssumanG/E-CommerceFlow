@@ -11,12 +11,6 @@ def hello():
 
 @main.route("/overview")
 def hello_world():
-    executives = [
-        {"name": "Essuman Godsaves", "company":"The Company", "title":"CEO"},
-        {"name": "Essuman Godsaves", "company":"The Company", "title":"CEO"}
-    ]
-
-
     columns = [col.name for col in Ecommerce.__table__.columns if not col.primary_key]
 
     # Generate unique count results

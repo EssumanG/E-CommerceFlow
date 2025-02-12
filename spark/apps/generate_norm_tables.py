@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from utils.model import Connection
+from spark_config import POSTGRES_PASSWORD, POSTGRES_USER, PORT_DOCKER, POSTGRES_DOCKER_HOST, POSTGRES_DB
 
 
 @contextmanager  
@@ -100,14 +101,23 @@ if "__main__" == __name__:
         #         database=args.database
         # )
 
-
+        print(f"{POSTGRES_USER}")
         connection = Connection(
-                user="test_user",
-                host="postgres",
-                password="test1234",
-                port="5432",
-                database="ecommerce"
+                user=str(POSTGRES_USER),
+                host=str(POSTGRES_DOCKER_HOST),
+                password=str(POSTGRES_PASSWORD),
+                port=5432,
+                database=str(POSTGRES_DB)
         )
+
+
+        # connection = Connection(
+        #         user="test_user",
+        #         host="postgres",
+        #         password="test1234",
+        #         port=5432,
+        #         database="ecommerce"
+        # )
 
         with connection.get_cursor() as cursor:
                 

@@ -2,14 +2,14 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructField, StructType, StringType, IntegerType, DateType, DoubleType
 from pyspark.sql import functions as F
 import uuid
+from spark.apps.spark_config import JDBC_DB_URL, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, PORT_DOCKER
 
 spark = SparkSession.builder.appName("process_data")\
             .config("spark.jars", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
             .config("spark.driver.extraClassPath", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
             .config("spark.executor.extraClassPath", "/opt/spark/resources/jars/postgresql-42.7.3.jar") \
                 .getOrCreate()
-db_url = "jdbc:postgresql://postgres:5432/ecommerce"
-db_properties = {"user": "test_user", "password": "test1234", "driver": "org.postgresql.Driver"}
+
 
 schema = StructType([
     StructField("customer_id", StringType(), True),
@@ -113,10 +113,10 @@ order_df.printSchema()
 try:
     pass
     # product_df.write.format("jdbc") \
-    #     .option("url", db_url) \
+    #     .option("url", JDBC_DB_URL) \
     #     .option("dbtable", "public.products") \
-    #     .option("user", "test_user") \
-    #     .option("password", "test1234") \
+    #     .option("user", POSTGRES_USER) \
+    #     .option("password", POSTGRES_PASSWORD) \
     #     .option("driver", "org.postgresql.Driver") \
     #     .mode("append") \
     #     .save()

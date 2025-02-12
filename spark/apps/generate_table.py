@@ -2,6 +2,7 @@ import psycopg2
 from contextlib import contextmanager
 import argparse
 from utils.model import Connection
+from spark_config import POSTGRES_PASSWORD, POSTGRES_USER, PORT_DOCKER, POSTGRES_DOCKER_HOST, POSTGRES_DB
 # from psycopg2.extensions import connection, cursor
 
 @contextmanager  
@@ -133,11 +134,11 @@ if "__main__" == __name__:
 
 
         connection = Connection(
-                user="test_user",
-                host="dpg-culq5iin91rc73egvqn0-a.oregon-postgres.render.com",
-                password="VbsthRufva4wgBpEXxuiaQxvRHSM6wEG",
-                port="5432",
-                database="ecommerce_hziq"
+                user=POSTGRES_USER,
+                host=POSTGRES_DOCKER_HOST,
+                password=POSTGRES_PASSWORD,
+                port=PORT_DOCKER,
+                database=POSTGRES_DB
         )
 
         with connection.get_cursor() as cursor:
