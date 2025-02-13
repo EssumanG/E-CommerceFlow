@@ -1,5 +1,5 @@
 psycopg2-binary
-flask
+flask[async]
 flask_migrate
 flask_sqlalchemy
 gunicorn
