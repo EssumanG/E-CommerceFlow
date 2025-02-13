@@ -3,3 +3,5 @@ flask
 flask_migrate
 flask_sqlalchemy
 gunicorn
+redis
+flask-caching
