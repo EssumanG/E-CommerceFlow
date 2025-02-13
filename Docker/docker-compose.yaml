@@ -300,7 +300,19 @@ services:
       - ../spark/resources/data:/home/jovyan/work/data/
       - ../spark/resources/jars:/home/jovyan/work/jars/
       - ../utils:/home/jovyan/work/notebooks/utils
-    
+
+  flask-app:
+    image: flaskapp:latest
+    restart: always
+    env_file:
+      - ../.env
+    ports:
+      - "8000:8000"
+    networks:
+      - my-network
+
+    depends_on:
+      - redis
 
   redis:
     image: redis:latest
@@ -308,6 +320,8 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - my-network
 
 
 volumes:
