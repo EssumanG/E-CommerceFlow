@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from flask_migrate import Migrate #Import Flask-Migrate
-from app.flask_config import Config
+from app.flask_config import Config, REDIS_URL
 from flask_caching import Cache
 import redis
 
@@ -17,7 +17,7 @@ def create_app():
    
     cache.init_app(app)
 
-    redis_client = redis.StrictRedis.from_url(app.config['CACHE_REDIS_URL'], decode_responses=True)
+    redis_client = redis.StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
     db.init_app(app)
     Migrate(app, db) 
