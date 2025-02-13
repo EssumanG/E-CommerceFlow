@@ -8,4 +8,4 @@ RUN cd root/flaskapp; la; cat requirements.txt; pip install -r requirements.txt
 
 RUN apt-get -y update && apt-get -y install vim
 
-CMD ["hypercorn", "--bind", "0.0.0.0:8000", "main:app"]
+CMD ["hypercorn", "--bind", "0.0.0.0:5000", "main:app"]
