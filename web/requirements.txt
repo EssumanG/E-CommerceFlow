@@ -5,3 +5,4 @@ flask_sqlalchemy
 gunicorn
 redis
 flask-caching
+uvicorn
